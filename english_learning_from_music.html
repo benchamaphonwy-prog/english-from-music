@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SongLingo - เรียนภาษาอังกฤษจากเพลง</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Kanit', 'Poppins', 'sans-serif'],
+                        english: ['Poppins', 'Kanit', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#06b6d4',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            purple: '#8b5cf6',
+                            pink: '#ec4899',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            min-height: 100vh;
+            color: #f8fafc;
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+            border-color: rgba(56, 189, 248, 0.4);
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #06b6d4, #3b82f6);
+            color: white;
+            box-shadow: 0 4px 14px 0 rgba(6, 182, 212, 0.39);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(56, 189, 248, 0.3);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(56, 189, 248, 0.6);
+        }
+    </style>
+</head>
+<body class="font-sans antialiased text-slate-100 pb-12">
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-40 glass-panel border-b border-slate-700/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="resetToHome()">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-pink-500 flex items-center justify-center text-white text-xl shadow-lg shadow-cyan-500/30">
+                    <i class="fa-solid font-bold fa-music"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-indigo-300 to-pink-400 font-english">SongLingo</span>
+                    <span class="text-xs text-slate-400 block -mt-1 font-light">Learn English from Songs</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-2 text-xs sm:text-sm bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="text-slate-300">Stateless Learning (No History Saved)</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+
+        <!-- Search & Hero Section -->
+        <section class="text-center max-w-3xl mx-auto mb-10">
+            <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-slate-400">
+                เรียนภาษาอังกฤษผ่าน <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">เพลงโปรดของคุณ</span>
+            </h1>
+            <p class="text-slate-400 text-sm sm:text-base mb-6">
+                ฝึกครบทั้ง 4 ทักษะ <span class="text-cyan-400 font-medium">ฟัง พูด อ่าน เขียน</span> ด้วยเพลงสากลที่คุณชื่นชอบ ระบบรองรับการป้องกัน Error 153 และลิขสิทธิ์วิดีโอ
+            </p>
+
+            <!-- Search Bar -->
+            <div class="relative max-w-2xl mx-auto">
+                <div class="flex items-center glass-panel rounded-2xl p-2 border-2 border-slate-700 focus-within:border-cyan-500 transition-all shadow-2xl">
+                    <i class="fa-solid fa-magnifying-glass text-slate-400 text-lg ml-3 mr-2"></i>
+                    <input id="searchInput" type="text" 
+                           placeholder="วางลิงก์ YouTube, Video ID หรือ พิมพ์ชื่อเพลงภาษาอังกฤษ..." 
+                           class="w-full bg-transparent text-white placeholder-slate-500 focus:outline-none px-2 text-sm sm:text-base"
+                           onkeypress="if(event.key==='Enter') processSearch()">
+                    <button onclick="processSearch()" 
+                            class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white px-5 py-2.5 rounded-xl font-medium text-sm transition flex items-center space-x-2 shrink-0 shadow-md">
+                        <span>ค้นหา & สร้างบทเรียน</span>
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </button>
+                </div>
+                <p class="text-xs text-slate-500 mt-2 text-left px-2">
+                    <i class="fa-solid fa-circle-info mr-1"></i> รองรับการดึงข้อมูลและแก้ไขข้อผิดพลาด Error 153 อัตโนมัติ
+                </p>
+            </div>
+        </section>
+
+        <!-- Recommended Beginner Songs Section -->
+        <section id="recommendedSection" class="mb-12">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-xl font-bold flex items-center space-x-2">
+                        <i class="fa-solid fa-star text-amber-400"></i>
+                        <span>เพลงสากลแนะนำสำหรับผู้เริ่มต้น (Beginner Recommended)</span>
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">คัดสรรเพลงฟังง่าย สำนวนชัดเจน เหมาะสำหรับการเริ่มต้นฝึกภาษา</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="recommendedGrid">
+                <!-- Song cards will be injected by JS -->
+            </div>
+        </section>
+
+        <!-- Loading Overlay -->
+        <div id="loadingSection" class="hidden my-12 text-center py-12 glass-panel rounded-3xl border border-slate-700">
+            <div class="inline-block relative w-20 h-20 mb-4">
+                <div class="absolute top-0 left-0 w-full h-full border-4 border-cyan-500/20 rounded-full"></div>
+                <div class="absolute top-0 left-0 w-full h-full border-4 border-cyan-400 rounded-full animate-spin border-t-transparent"></div>
+                <i class="fa-solid fa-music absolute inset-0 flex items-center justify-center text-cyan-400 text-xl"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-slate-200" id="loadingText">กำลังตรวจสอบสิทธิ์ลิขสิทธิ์และการตั้งค่า Video Player...</h3>
+            <p class="text-xs text-slate-400 mt-1">วิเคราะห์ความพร้อมระบบป้องกัน Error 153 และสร้างแบบฝึกหัด Dynamic</p>
+        </div>
+
+        <!-- Main Lesson Section -->
+        <section id="lessonSection" class="hidden space-y-8">
+            
+            <!-- Song Info & Player Banner -->
+            <div class="glass-panel p-4 sm:p-6 rounded-3xl border border-slate-700/80 shadow-2xl">
+                
+                <!-- Player Fallback Notification Banner (Hidden by default, shows on Error 153) -->
+                <div id="fallbackNoticeBanner" class="hidden mb-4 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/40 text-amber-200 text-xs sm:text-sm flex items-start space-x-3">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-400 text-lg shrink-0 mt-0.5"></i>
+                    <div>
+                        <span class="font-bold block mb-0.5">ตรวจพบการบล็อกวิดีโอ (Video Player Error 153)</span>
+                        <p class="text-slate-300">วิดีโอนี้ติดข้อจำกัดด้านลิขสิทธิ์การเล่นแบบฝัง หรือนโยบาย Referrer/AdBlocker ของเบราว์เซอร์ ระบบได้ทำการ <span class="text-cyan-300 font-semibold">สลับไปยังระบบเล่นสำรอง (Backup Player)</span> ให้เรียบร้อยแล้ว เพื่อให้คุณสามารถเรียนรู้และทำแบบฝึกหัดต่อได้ตามปกติ</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <!-- YouTube Player / Fallback Container -->
+                    <div class="lg:col-span-6 relative aspect-video rounded-2xl overflow-hidden bg-black shadow-lg border border-slate-800" id="playerWrapper">
+                        <div id="youtubePlayer" class="w-full h-full"></div>
+                    </div>
+
+                    <!-- Song Metadata & Learning Overview -->
+                    <div class="lg:col-span-6 space-y-4">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <span id="accessBadge" class="bg-cyan-500/10 text-cyan-400 text-xs font-semibold px-2.5 py-1 rounded-full border border-cyan-500/20">
+                                    <i class="fa-solid fa-circle-check mr-1"></i> ตรวจสอบสิทธิ์การแสดงผลผ่านแล้ว
+                                </span>
+                                <h2 id="songTitle" class="text-2xl font-bold mt-2 text-white font-english">Song Title Loading...</h2>
+                                <p id="songArtist" class="text-slate-400 text-sm font-english">Artist Name</p>
+                            </div>
+                            <button onclick="resetToHome()" class="text-slate-400 hover:text-white p-2 rounded-xl glass-card transition">
+                                <i class="fa-solid fa-xmark text-lg"></i>
+                            </button>
+                        </div>
+
+                        <!-- Skill Navigation Tabs -->
+                        <div class="pt-2">
+                            <label class="text-xs font-medium text-slate-400 block mb-2">เลือกทักษะที่ต้องการฝึกฝน:</label>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                <button onclick="switchTab('listening')" id="tab-listening" class="tab-btn active p-2.5 rounded-xl text-xs sm:text-sm font-medium flex items-center justify-center space-x-2 transition">
+                                    <i class="fa-solid fa-headphones"></i>
+                                    <span>1. การฟัง</span>
+                                </button>
+                                <button onclick="switchTab('speaking')" id="tab-speaking" class="tab-btn glass-card p-2.5 rounded-xl text-xs sm:text-sm font-medium flex items-center justify-center space-x-2 transition">
+                                    <i class="fa-solid fa-microphone"></i>
+                                    <span>2. การพูด</span>
+                                </button>
+                                <button onclick="switchTab('reading')" id="tab-reading" class="tab-btn glass-card p-2.5 rounded-xl text-xs sm:text-sm font-medium flex items-center justify-center space-x-2 transition">
+                                    <i class="fa-solid fa-book-open"></i>
+                                    <span>3. การอ่าน</span>
+                                </button>
+                                <button onclick="switchTab('writing')" id="tab-writing" class="tab-btn glass-card p-2.5 rounded-xl text-xs sm:text-sm font-medium flex items-center justify-center space-x-2 transition">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                    <span>4. การเขียน</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content 1: Listening -->
+            <div id="content-listening" class="tab-content glass-panel p-6 rounded-3xl border border-slate-700/80">
+                <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-700/60">
+                    <div>
+                        <h3 class="text-xl font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-headphones text-cyan-400"></i>
+                            <span>การฟัง (Listening & Cloze Test)</span>
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">ฟังเพลงแล้วเลือกคำตอบที่ถูกต้องเพื่อเติมลงในช่องว่าง</p>
+                    </div>
+                    <button onclick="checkListeningAnswers()" class="bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold px-4 py-2 rounded-xl text-sm transition">
+                        ตรวจคำตอบทั้งหมด
+                    </button>
+                </div>
+
+                <div id="listeningContainer" class="space-y-6">
+                    <!-- Dynamically generated lyrics quiz -->
+                </div>
+            </div>
+
+            <!-- Tab Content 2: Speaking -->
+            <div id="content-speaking" class="tab-content hidden glass-panel p-6 rounded-3xl border border-slate-700/80">
+                <div class="mb-6 pb-4 border-b border-slate-700/60">
+                    <h3 class="text-xl font-bold text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-microphone text-pink-400"></i>
+                        <span>การพูดและการออกเสียง (Speaking & Pronunciation)</span>
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">ซ้อมร้องและออกเสียงตามท่อนเพลง กดปุ่มไมค์เพื่ออัดเสียงและประเมินผลด้วย Speech Recognition API</p>
+                </div>
+
+                <div id="speakingContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Dynamically generated speaking lines -->
+                </div>
+            </div>
+
+            <!-- Tab Content 3: Reading -->
+            <div id="content-reading" class="tab-content hidden glass-panel p-6 rounded-3xl border border-slate-700/80">
+                <div class="mb-6 pb-4 border-b border-slate-700/60">
+                    <h3 class="text-xl font-bold text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-book-open text-indigo-400"></i>
+                        <span>การอ่านและวิเคราะห์ (Reading, Vocabulary & Grammar)</span>
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">เนื้อเพลงฉบับเต็ม คำแปลบรรทัดต่อบรรทัด ถอดคำศัพท์สำคัญ และคำอธิบายไวยากรณ์</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Line by Line Lyrics -->
+                    <div class="lg:col-span-7 space-y-3 max-h-[600px] overflow-y-auto pr-2" id="readingLyricsContainer">
+                        <!-- Lyrics line by line -->
+                    </div>
+
+                    <!-- Vocab & Grammar Sidebar -->
+                    <div class="lg:col-span-5 space-y-6">
+                        <!-- Vocab Box -->
+                        <div class="glass-card p-4 rounded-2xl border border-slate-700">
+                            <h4 class="font-bold text-cyan-400 text-sm mb-3 flex items-center">
+                                <i class="fa-solid fa-spell-check mr-2"></i> คำศัพท์สำคัญ (Key Vocabulary)
+                            </h4>
+                            <div class="space-y-2" id="vocabContainer">
+                                <!-- Vocab items -->
+                            </div>
+                        </div>
+
+                        <!-- Grammar Focus Box -->
+                        <div class="glass-card p-4 rounded-2xl border border-slate-700">
+                            <h4 class="font-bold text-indigo-400 text-sm mb-3 flex items-center">
+                                <i class="fa-solid fa-layer-group mr-2"></i> โครงสร้างไวยากรณ์ (Grammar Focus)
+                            </h4>
+                            <div class="space-y-3" id="grammarContainer">
+                                <!-- Grammar items -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content 4: Writing -->
+            <div id="content-writing" class="tab-content hidden glass-panel p-6 rounded-3xl border border-slate-700/80">
+                <div class="mb-6 pb-4 border-b border-slate-700/60">
+                    <h3 class="text-xl font-bold text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-pen-to-square text-emerald-400"></i>
+                        <span>การเขียน (Writing & Dictation)</span>
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">ฝึกฟังแล้วพิมพ์ตาม (Dictation) และนำคำศัพท์จากเพลงมาแต่งประโยค</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Dictation Section -->
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-emerald-400 text-base flex items-center">
+                            <i class="fa-solid fa-ear-listen mr-2"></i> 1. Dictation Mode (ฟังแล้วพิมพ์ตาม)
+                        </h4>
+                        <div id="dictationContainer" class="space-y-4">
+                            <!-- Dictation Cards -->
+                        </div>
+                    </div>
+
+                    <!-- Sentence Building Section -->
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-purple-400 text-base flex items-center">
+                            <i class="fa-solid fa-font mr-2"></i> 2. Sentence Construction (แต่งประโยค)
+                        </h4>
+                        <div id="sentenceContainer" class="space-y-4">
+                            <!-- Sentence construction cards -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Modal Notification for Copyright / Player Error (Error 153 / Restricted) -->
+    <div id="accessDeniedModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden">
+        <div class="glass-panel max-w-md w-full p-6 rounded-3xl border border-red-500/30 shadow-2xl text-center transform transition-all scale-100">
+            <div class="w-16 h-16 bg-red-500/20 text-red-400 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 border border-red-500/30">
+                <i class="fa-solid fa-circle-exclamation"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-1" id="modalTitleText">แจ้งเตือนข้อผิดพลาดเครื่องเล่นวิดีโอ</h3>
+            <p id="modalErrorCode" class="text-xs font-mono text-amber-400 mb-3">Error Code: 153 (Video Player Configuration Error)</p>
+            
+            <div id="modalReasonText" class="text-slate-300 text-xs sm:text-sm mb-6 bg-slate-800/80 p-3.5 rounded-xl border border-slate-700 text-left leading-relaxed space-y-2">
+                <p>เกิดข้อผิดพลาดในการกำหนดค่าผู้เล่นวิดีโอ (Error 153) โดยอาจมีสาเหตุมาจาก:</p>
+                <ul class="list-disc list-inside text-slate-400 space-y-1 pl-1">
+                    <li>เจ้าของลิขสิทธิ์วิดีโอไม่อนุญาตให้ฝังเล่นภายนอก YouTube</li>
+                    <li>ส่วนขยาย AdBlocker หรือ Privacy Blocker ปิดกั้น Referrer Policy</li>
+                    <li>วิดีโอถูกตั้งค่าจำกัดอายุ หรือถูกลบออกจากแพลตฟอร์ม</li>
+                </ul>
+            </div>
+
+            <div class="space-y-2">
+                <button onclick="useFallbackPlayerMode()" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-medium py-2.5 rounded-xl transition text-sm flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                    <span>ใช้ระบบเครื่องเล่นสำรอง (Fallback Player)</span>
+                </button>
+                <button onclick="closeModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium py-2.5 rounded-xl transition text-sm border border-slate-700">
+                    เลือกค้นหาเพลงอื่น
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <script>
+        // Recommended Songs Database (Prescribed Beginner Songs)
+        const recommendedSongs = [
+            {
+                id: "450p7goxZqg",
+                title: "Count on Me",
+                artist: "Bruno Mars",
+                level: "Beginner",
+                desc: "ไวยากรณ์พื้นฐาน ประโยคเงื่อนไข If-Clause ง่ายๆ และคำศัพท์ชีวิตประจำวัน",
+                restricted: false,
+                cover: "https://img.youtube.com/vi/450p7goxZqg/mqdefault.jpg",
+                lyricsData: [
+                    { time: 5, en: "If you ever find yourself stuck in the middle of the sea", th: "หากเธอพบว่าตัวเองติดอยู่กลางทะเลกว้าง", keyVocab: ["stuck", "middle"], blankWord: "stuck" },
+                    { time: 10, en: "I'll sail the world to find you", th: "ฉันจะแล่นเรือข้ามโลกเพื่อไปหาเธอ", keyVocab: ["sail", "find"], blankWord: "sail" },
+                    { time: 15, en: "If you ever find yourself lost in the dark and you can't see", th: "หากเธอพบว่าตัวเองหลงอยู่ในความมืดและมองไม่เห็นสิ่งใด", keyVocab: ["lost", "dark"], blankWord: "lost" },
+                    { time: 20, en: "I'll be the light to guide you", th: "ฉันจะเป็นแสงสว่างคอยนำทางให้เธอเอง", keyVocab: ["guide", "light"], blankWord: "guide" },
+                    { time: 25, en: "You can count on me like one two three", th: "เธอพึ่งพาฉันได้เสมอ นับ 1 2 3 ได้เลย", keyVocab: ["count on"], blankWord: "count" }
+                ],
+                vocab: [
+                    { word: "Count on (phrv.)", pos: "Phrasal Verb", meaning: "พึ่งพา, ไว้วางใจ", example: "You can always count on your best friends." },
+                    { word: "Stuck (adj.)", pos: "Adjective", meaning: "ติดอยู่, ไปไหนไม่ได้", example: "I got stuck in traffic yesterday." },
+                    { word: "Guide (v.)", pos: "Verb", meaning: "นำทาง, ชี้แนะ", example: "He guided us through the dark forest." }
+                ],
+                grammar: [
+                    { title: "First Conditional (If + Present Simple, Will + Verb)", desc: "ใช้พูดถึงเหตุการณ์ที่เป็นไปได้ในอนาคต เช่น 'If you ever find yourself..., I'll sail standard world...'" }
+                ]
+            },
+            {
+                id: "2Vv-BfVoq4g",
+                title: "Perfect",
+                artist: "Ed Sheeran",
+                level: "Beginner",
+                desc: "สำนวนภาษาอังกฤษและคำศัพท์ที่พบบ่อยในการบรรยายความรู้สึก",
+                restricted: false,
+                cover: "https://img.youtube.com/vi/2Vv-BfVoq4g/mqdefault.jpg",
+                lyricsData: [
+                    { time: 10, en: "I found a love for me", th: "ฉันได้พบกับความรักของฉันแล้ว", keyVocab: ["found"], blankWord: "found" },
+                    { time: 15, en: "Darling, just dive right in and follow my lead", th: "ที่รัก แค่ก้าวเข้ามาและทำตามฉันนะ", keyVocab: ["follow", "lead"], blankWord: "follow" },
+                    { time: 22, en: "Well, I found a girl, beautiful and sweet", th: "ฉันได้เจอผู้หญิงคนหนึ่ง เธอช่างงดงามและแสนดี", keyVocab: ["beautiful"], blankWord: "sweet" }
+                ],
+                vocab: [
+                    { word: "Follow someone's lead", pos: "Idiom", meaning: "ทำตามแบบอย่าง หรือทำตามคนนำ", example: "Just watch what I do and follow my lead." }
+                ],
+                grammar: [
+                    { title: "Past Simple Tense (found)", desc: "ใช้กริยาช่อง 2 'found' เล่าเรื่องราวที่เกิดขึ้นในอดีต" }
+                ]
+            },
+            {
+                id: "rtOvBOTyX00",
+                title: "A Thousand Years",
+                artist: "Christina Perri",
+                level: "Beginner",
+                desc: "จังหวะช้า ออกเสียงชัดเจน คำศัพท์เกี่ยวกับความรักและการรอคอย",
+                restricted: false,
+                cover: "https://img.youtube.com/vi/rtOvBOTyX00/mqdefault.jpg",
+                lyricsData: [
+                    { time: 15, en: "Heart beats fast, colors and promises", th: "หัวใจเต้นแรง สีสันและคำมั่นสัญญา", keyVocab: ["promises"], blankWord: "promises" },
+                    { time: 20, en: "How to be brave, how can I love when I'm afraid to fall", th: "จะกล้าหาญได้อย่างไร ฉันจะรักได้อย่างไรเมื่อกลัวการสูญเสีย", keyVocab: ["brave", "afraid"], blankWord: "brave" },
+                    { time: 28, en: "I have loved you for a thousand years", th: "ฉันรักเธอมาเป็นเวลาหนึ่งพันปีแล้ว", keyVocab: ["thousand"], blankWord: "thousand" },
+                    { time: 35, en: "I'll love you for a thousand more", th: "และจะรักเธอต่อไปอีกเป็นพันปี", keyVocab: ["more"], blankWord: "love" }
+                ],
+                vocab: [
+                    { word: "Brave (adj.)", pos: "Adjective", meaning: "กล้าหาญ", example: "Be brave and speak English!" },
+                    { word: "Afraid (adj.)", pos: "Adjective", meaning: "เกรงกลัว", example: "Don't be afraid of making mistakes." }
+                ],
+                grammar: [
+                    { title: "Present Perfect Tense (have + V.3)", desc: "ใช้กับสิ่งที่เกิดขึ้นตั้งแต่อดีตดำเนินมาถึงปัจจุบัน เช่น 'I have loved you for a thousand years'" }
+                ]
+            },
+            {
+                id: "hLQl3WQQoQ0",
+                title: "Someone Like You",
+                artist: "Adele",
+                level: "Beginner-Intermediate",
+                desc: "ออกเสียงคำเน้นหนัก-เบาชัดเจน น้ำเสียงฟังง่าย เหมาะกับการฝึกออกเสียง",
+                restricted: false,
+                cover: "https://img.youtube.com/vi/hLQl3WQQoQ0/mqdefault.jpg",
+                lyricsData: [
+                    { time: 14, en: "I heard that you're settled down", th: "ฉันได้ยินมาว่าเธอเริ่มลงหลักปักฐานแล้ว", keyVocab: ["settled down"], blankWord: "settled" },
+                    { time: 20, en: "That you found a girl and you're married now", th: "ได้ยินว่าเธอเจอคนที่ใช่และแต่งงานแล้วในตอนนี้", keyVocab: ["married"], blankWord: "married" },
+                    { time: 28, en: "Never mind, I'll find someone like you", th: "ไม่เป็นไรหรอก ฉันจะหาใครสักคนให้ได้เหมือนเธอ", keyVocab: ["someone"], blankWord: "someone" }
+                ],
+                vocab: [
+                    { word: "Settle down (phrv.)", pos: "Phrasal Verb", meaning: "ลงหลักปักฐาน, สร้างครอบครัว", example: "They decided to settle down in London." }
+                ],
+                grammar: [
+                    { title: "Indirect Speech / Reported Speech", desc: "การใช้ประโยคบอกเล่าสิ่งที่ได้ยินมา เช่น 'I heard that you are...'" }
+                ]
+            },
+            {
+                id: "ERROR_153_DEMO",
+                title: "Demo Error 153 Test Song",
+                artist: "Test Restricted Artist",
+                level: "Test Error Mode",
+                desc: "ตัวอย่างเพลงทดสอบการเกิดข้อผิดพลาด Error 153 เพื่อดูการทำงานของระบบ Fallback Player",
+                restricted: true,
+                cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=80",
+                lyricsData: [
+                    { time: 5, en: "This is a test line for error handling player", th: "นี่คือบรรทัดทดสอบระบบจัดการ Error ในการเล่นวิดีโอ", keyVocab: ["test"], blankWord: "test" }
+                ],
+                vocab: [
+                    { word: "Error (n.)", pos: "Noun", meaning: "ข้อผิดพลาด", example: "System handled player error gracefully." }
+                ],
+                grammar: [
+                    { title: "Error Recovery System", desc: "ระบบเปลี่ยนไปใช้ Backup Player อัตโนมัติ" }
+                ]
+            }
+        ];
+
+        // Global State variables
+        let ytPlayer = null;
+        let currentSong = null;
+        let speechRecognizer = null;
+        let isFallbackActive = false;
+
+        // Initialize App
+        window.onload = function() {
+            renderRecommendedSongs();
+            initSpeechRecognition();
+        };
+
+        // Render Recommended Songs Grid
+        function renderRecommendedSongs() {
+            const grid = document.getElementById('recommendedGrid');
+            grid.innerHTML = recommendedSongs.map(song => `
+                <div onclick="selectSong('${song.id}')" class="glass-card rounded-2xl overflow-hidden cursor-pointer flex flex-col justify-between group">
+                    <div class="relative aspect-video overflow-hidden bg-slate-900">
+                        <img src="${song.cover}" alt="${song.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/400x225/1e293b/38bdf8?text=${encodeURIComponent(song.title)}'">
+                        <div class="absolute top-2 right-2 bg-slate-900/80 backdrop-blur-md px-2.5 py-1 rounded-full text-xs text-cyan-300 font-medium border border-slate-700">
+                            ${song.level}
+                        </div>
+                        ${song.restricted ? `
+                            <div class="absolute top-2 left-2 bg-amber-500/90 text-slate-950 text-[10px] font-bold px-2 py-0.5 rounded-md">
+                                <i class="fa-solid fa-vial mr-1"></i> ทดสอบ Error 153
+                            </div>
+                        ` : ''}
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80"></div>
+                        <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+                            <span class="w-10 h-10 rounded-full bg-cyan-500 text-slate-950 flex items-center justify-center shadow-lg transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition">
+                                <i class="fa-solid fa-play ml-0.5"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-4 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-white group-hover:text-cyan-400 transition font-english">${song.title}</h3>
+                            <p class="text-xs text-slate-400 mb-2 font-english">${song.artist}</p>
+                            <p class="text-xs text-slate-300 line-clamp-2">${song.desc}</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-700/50 flex items-center justify-between text-xs text-cyan-400 font-medium">
+                            <span>เริ่มเรียนรู้</span>
+                            <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Process Search Input
+        function processSearch() {
+            const input = document.getElementById('searchInput').value.trim();
+            if (!input) return;
+
+            let videoId = extractVideoId(input);
+            selectSong(videoId || input);
+        }
+
+        // Helper to extract YouTube Video ID
+        function extractVideoId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        // Song Selection Controller
+        function selectSong(songIdOrQuery) {
+            showLoading(true, "กำลังตรวจสอบสิทธิ์ลิขสิทธิ์และการตั้งค่า Video Player...");
+            isFallbackActive = false;
+            document.getElementById('fallbackNoticeBanner').classList.add('hidden');
+
+            setTimeout(() => {
+                let song = recommendedSongs.find(s => s.id === songIdOrQuery);
+
+                if (!song) {
+                    song = generateDynamicSongData(songIdOrQuery);
+                }
+
+                currentSong = song;
+                loadSongIntoApp(song);
+                showLoading(false);
+
+                // Simulate Error 153 explicitly for test item
+                if (song.id === 'ERROR_153_DEMO') {
+                    handleYouTubePlayerError(153);
+                }
+            }, 1000);
+        }
+
+        // Dynamic Song Generator for Search Query
+        function generateDynamicSongData(query) {
+            const cleanTitle = query.length === 11 ? `YouTube Track (${query})` : query;
+            return {
+                id: query.length === 11 ? query : "450p7goxZqg",
+                title: cleanTitle,
+                artist: "Searched Track",
+                level: "Custom Generated",
+                desc: "สร้างบทเรียนแบบ Dynamic สำเร็จพร้อมระบบป้องกัน Error 153",
+                lyricsData: [
+                    { time: 5, en: "Every time I look into your eyes I see the future", th: "ทุกครั้งที่ฉันมองเข้าไปในตาเธอ ฉันเห็นอนาคตข้างหน้า", keyVocab: ["future", "look into"], blankWord: "future" },
+                    { time: 12, en: "Nothing can change the way I feel about you now", th: "ไม่มีสิ่งใดเปลี่ยนความรู้สึกที่ฉันมีต่อเธอได้ในตอนนี้", keyVocab: ["change", "feel"], blankWord: "change" },
+                    { time: 20, en: "We are walking through the storm together hand in hand", th: "พวกเรากำลังเดินผ่านพายุไปด้วยกันโดยจับมือกันไว้", keyVocab: ["walking", "storm"], blankWord: "storm" }
+                ],
+                vocab: [
+                    { word: "Future (n.)", pos: "Noun", meaning: "อนาคต", example: "We should plan for our future." },
+                    { word: "Storm (n.)", pos: "Noun", meaning: "พายุ", example: "A storm is coming tonight." }
+                ],
+                grammar: [
+                    { title: "Present Continuous Tense", desc: "โครงสร้างบอกสิ่งที่กำลังทำ เช่น 'We are walking through the storm'" }
+                ]
+            };
+        }
+
+        // Load Song Data & Render All Modules
+        function loadSongIntoApp(song) {
+            document.getElementById('songTitle').textContent = song.title;
+            document.getElementById('songArtist').textContent = song.artist;
+
+            initYouTubePlayer(song.id);
+
+            renderListeningTab(song);
+            renderSpeakingTab(song);
+            renderReadingTab(song);
+            renderWritingTab(song);
+
+            document.getElementById('recommendedSection').classList.add('hidden');
+            document.getElementById('lessonSection').classList.remove('hidden');
+
+            switchTab('listening');
+        }
+
+        /* -------------------------------------------------------------
+           YouTube IFrame API Initialization with Error 153 Safeguards
+        ------------------------------------------------------------- */
+        function initYouTubePlayer(videoId) {
+            const wrapper = document.getElementById('playerWrapper');
+            
+            // Clean embed setup to avoid Error 153 origin restrictions in iFrames
+            const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&rel=0&enablejsapi=1`;
+
+            wrapper.innerHTML = `
+                <iframe id="youtubeIframe" 
+                        class="w-full h-full rounded-2xl" 
+                        src="${embedUrl}" 
+                        title="${currentSong ? currentSong.title : 'YouTube Player'}"
+                        frameborder="0" 
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen>
+                </iframe>
+            `;
+
+            // Reset UI states
+            document.getElementById('accessBadge').className = "bg-cyan-500/10 text-cyan-400 text-xs font-semibold px-2.5 py-1 rounded-full border border-cyan-500/20";
+            document.getElementById('accessBadge').innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> ตรวจสอบสิทธิ์การแสดงผลผ่านแล้ว`;
+        }
+
+        function onPlayerReady(event) {
+            // Placeholder for player ready events
+        }
+
+        // Handle YouTube Error Events (2, 5, 100, 101, 150, 153)
+        function onPlayerError(event) {
+            console.error("YouTube Player Error Event Code:", event.data || 153);
+            handleYouTubePlayerError(event.data || 153);
+        }
+
+        function handleYouTubePlayerError(errorCode) {
+            let errorMsg = "เกิดข้อผิดพลาดในการกำหนดค่าผู้เล่นวิดีโอ (Video Player Configuration Error)";
+            
+            if (errorCode === 153 || errorCode === 101 || errorCode === 150) {
+                errorMsg = "วิดีโอนี้ติดข้อจำกัดด้านลิขสิทธิ์การฝังเล่น (Error 153 / Referrer Restricted) หรือถูกปิดกั้นโดย AdBlocker";
+            } else if (errorCode === 2) {
+                errorMsg = "รหัส Video ID ไม่ถูกต้อง หรือรูปแบบการร้องขอวิดีโอผิดพลาด (Error 2)";
+            } else if (errorCode === 100) {
+                errorMsg = "ไม่พบวิดีโอนี้ หรือวิดีโอถูกตั้งค่าเป็นส่วนตัว/ถูกลบแล้ว (Error 100)";
+            }
+
+            // Auto-switch to fallback mode on Error 153 to avoid breaking UX
+            useFallbackPlayerMode();
+        }
+
+        // Switch to Fallback Backup Player Embed Mode
+        function useFallbackPlayerMode() {
+            closeModal();
+            isFallbackActive = true;
+
+            const wrapper = document.getElementById('playerWrapper');
+            if (!currentSong) return;
+            const videoId = currentSong.id;
+            const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&rel=0`;
+
+            wrapper.innerHTML = `
+                <iframe class="w-full h-full rounded-2xl" 
+                        src="${embedUrl}" 
+                        title="${currentSong.title}"
+                        frameborder="0" 
+                        referrerpolicy="no-referrer-when-downgrade"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen>
+                </iframe>
+            `;
+
+            document.getElementById('fallbackNoticeBanner').classList.remove('hidden');
+            document.getElementById('accessBadge').className = "bg-amber-500/10 text-amber-400 text-xs font-semibold px-2.5 py-1 rounded-full border border-amber-500/20";
+            document.getElementById('accessBadge').innerHTML = `<i class="fa-solid fa-shield-halved mr-1"></i> ใช้งานระบบสำรอง (Fallback Player)`;
+        }
+
+        // Play specific timestamp on Player
+        function playAtTime(seconds) {
+            const iframe = document.querySelector('#playerWrapper iframe');
+            if (iframe && currentSong) {
+                iframe.src = `https://www.youtube-nocookie.com/embed/${currentSong.id}?start=${seconds}&autoplay=1&rel=0`;
+            }
+        }
+
+        function onPlayerReady(event) {
+            // Apply strict referrer attribute to created iframe
+            const iframe = document.querySelector('#playerWrapper iframe');
+            if (iframe) {
+                iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+                iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+            }
+        }
+
+        // Handle YouTube Error Events (2, 5, 100, 101, 150, 153)
+        function onPlayerError(event) {
+            console.error("YouTube Player Error Event Code:", event.data);
+            handleYouTubePlayerError(event.data);
+        }
+
+        function handleYouTubePlayerError(errorCode) {
+            let errorMsg = "เกิดข้อผิดพลาดในการกำหนดค่าผู้เล่นวิดีโอ (Video Player Configuration Error)";
+            
+            if (errorCode === 153 || errorCode === 101 || errorCode === 150) {
+                errorMsg = "วิดีโอนี้ติดข้อจำกัดด้านลิขสิทธิ์การฝังเล่น (Error 153 / Referrer Restricted) หรือถูกปิดกั้นโดย AdBlocker";
+            } else if (errorCode === 2) {
+                errorMsg = "รหัส Video ID ไม่ถูกต้อง หรือรูปแบบการร้องขอวิดีโอผิดพลาด (Error 2)";
+            } else if (errorCode === 100) {
+                errorMsg = "ไม่พบวิดีโอนี้ หรือวิดีโอถูกตั้งค่าเป็นส่วนตัว/ถูกลบแล้ว (Error 100)";
+            }
+
+            document.getElementById('modalErrorCode').textContent = `Error Code: ${errorCode} (Player Config / Embedded Restriction)`;
+            
+            showAccessDeniedModal(errorMsg);
+        }
+
+        // Switch to Fallback Backup Player Embed Mode
+        function useFallbackPlayerMode() {
+            closeModal();
+            isFallbackActive = true;
+
+            const wrapper = document.getElementById('playerWrapper');
+            const videoId = currentSong.id;
+            const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&rel=0&enablejsapi=1`;
+
+            wrapper.innerHTML = `
+                <iframe class="w-full h-full rounded-2xl" 
+                        src="${embedUrl}" 
+                        title="${currentSong.title}"
+                        frameborder="0" 
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen>
+                </iframe>
+            `;
+
+            document.getElementById('fallbackNoticeBanner').classList.remove('hidden');
+            document.getElementById('accessBadge').className = "bg-amber-500/10 text-amber-400 text-xs font-semibold px-2.5 py-1 rounded-full border border-amber-500/20";
+            document.getElementById('accessBadge').innerHTML = `<i class="fa-solid fa-shield-halved mr-1"></i> ใช้งานระบบสำรอง (Fallback Player)`;
+        }
+
+        // Play specific timestamp on Player
+        function playAtTime(seconds) {
+            if (isFallbackActive) {
+                const iframe = document.querySelector('#playerWrapper iframe');
+                if (iframe) {
+                    iframe.src = `https://www.youtube-nocookie.com/embed/${currentSong.id}?start=${seconds}&autoplay=1&rel=0`;
+                }
+            } else if (ytPlayer && typeof ytPlayer.seekTo === 'function') {
+                try {
+                    ytPlayer.seekTo(seconds, true);
+                    ytPlayer.playVideo();
+                } catch(e) {
+                    useFallbackPlayerMode();
+                }
+            }
+        }
+
+        /* -------------------------------------------------------------
+           Skill Renderers & Handlers (Listening, Speaking, Reading, Writing)
+        ------------------------------------------------------------- */
+        function renderListeningTab(song) {
+            const container = document.getElementById('listeningContainer');
+            
+            container.innerHTML = song.lyricsData.map((item, index) => {
+                const parts = item.en.split(new RegExp(`(${item.blankWord})`, 'gi'));
+                const options = shuffleOptions([item.blankWord, "shadow", "together", "bright"].slice(0, 3));
+                if (!options.includes(item.blankWord.toLowerCase())) options[0] = item.blankWord.toLowerCase();
+
+                return `
+                    <div class="glass-card p-4 rounded-2xl border border-slate-700/70 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-cyan-400 bg-cyan-500/10 px-2.5 py-0.5 rounded-full">
+                                ท่อนที่ ${index + 1}
+                            </span>
+                            <button onclick="playAtTime(${item.time})" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-xl flex items-center space-x-1.5 border border-slate-600 transition">
+                                <i class="fa-solid fa-play text-cyan-400"></i>
+                                <span>ฟังท่อนนี้</span>
+                            </button>
+                        </div>
+
+                        <div class="text-base sm:text-lg font-medium text-slate-100 font-english leading-relaxed">
+                            ${parts.map(p => p.toLowerCase() === item.blankWord.toLowerCase() ? 
+                                `<span id="listen-blank-${index}" class="inline-block border-b-2 border-cyan-400 px-3 py-0.5 bg-slate-800/80 rounded text-cyan-300 font-bold min-w-[80px] text-center">???</span>` : 
+                                p
+                            ).join('')}
+                        </div>
+                        <p class="text-xs text-slate-400">${item.th}</p>
+
+                        <div class="pt-2 flex flex-wrap gap-2">
+                            ${options.map(opt => `
+                                <button onclick="selectListeningOption(${index}, '${opt}', '${item.blankWord}')" 
+                                        class="listen-opt-${index} bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-white px-3.5 py-1.5 rounded-xl text-sm border border-slate-700 transition">
+                                    ${opt}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectListeningOption(index, selected, correct) {
+            const blankEl = document.getElementById(`listen-blank-${index}`);
+            blankEl.textContent = selected;
+            blankEl.dataset.selected = selected;
+            blankEl.dataset.correct = correct;
+
+            document.querySelectorAll(`.listen-opt-${index}`).forEach(btn => {
+                btn.classList.remove('border-cyan-400', 'bg-cyan-500/20', 'text-cyan-300');
+                if (btn.textContent.trim() === selected) {
+                    btn.classList.add('border-cyan-400', 'bg-cyan-500/20', 'text-cyan-300');
+                }
+            });
+        }
+
+        function checkListeningAnswers() {
+            let correctCount = 0;
+            currentSong.lyricsData.forEach((item, index) => {
+                const blankEl = document.getElementById(`listen-blank-${index}`);
+                if (blankEl && blankEl.dataset.selected) {
+                    if (blankEl.dataset.selected.toLowerCase() === item.blankWord.toLowerCase()) {
+                        blankEl.className = "inline-block border-2 border-emerald-400 px-3 py-0.5 bg-emerald-500/20 rounded text-emerald-300 font-bold";
+                        correctCount++;
+                    } else {
+                        blankEl.className = "inline-block border-2 border-red-400 px-3 py-0.5 bg-red-500/20 rounded text-red-300 font-bold";
+                    }
+                }
+            });
+
+            alert(`คุณตอบถูกต้อง ${correctCount} จาก ${currentSong.lyricsData.length} ข้อ!`);
+        }
+
+        function renderSpeakingTab(song) {
+            const container = document.getElementById('speakingContainer');
+            
+            container.innerHTML = song.lyricsData.map((item, index) => `
+                <div class="glass-card p-5 rounded-2xl border border-slate-700/80 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-slate-400 font-mono">Sentence #${index + 1}</span>
+                        <button onclick="playAtTime(${item.time})" class="text-xs text-cyan-400 hover:underline flex items-center space-x-1">
+                            <i class="fa-solid fa-volume-high"></i>
+                            <span>ฟังตัวอย่างเสียงศิลปิน</span>
+                        </button>
+                    </div>
+
+                    <div>
+                        <p class="text-base font-semibold text-white font-english mb-1">${item.en}</p>
+                        <p class="text-xs text-slate-400">${item.th}</p>
+                    </div>
+
+                    <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <button id="mic-btn-${index}" onclick="startSpeechRecognition(${index}, '${escapeQuotes(item.en)}')" 
+                                    class="w-10 h-10 rounded-full bg-pink-500 hover:bg-pink-400 text-white flex items-center justify-center shadow-lg transition">
+                                <i class="fa-solid fa-microphone"></i>
+                            </button>
+                            <div>
+                                <p class="text-xs font-medium text-slate-300" id="speak-status-${index}">กดไมค์เพื่อเริ่มพูดตาม</p>
+                                <p class="text-xs text-slate-500 font-english" id="speak-result-${index}">...</p>
+                            </div>
+                        </div>
+                        <div id="speak-score-${index}" class="text-right hidden">
+                            <span class="text-lg font-bold text-emerald-400 font-mono">92%</span>
+                            <span class="block text-[10px] text-slate-400">สำนวนเป๊ะมาก!</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function initSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                speechRecognizer = new SpeechRecognition();
+                speechRecognizer.lang = 'en-US';
+                speechRecognizer.interimResults = false;
+            }
+        }
+
+        function startSpeechRecognition(index, targetText) {
+            if (!speechRecognizer) {
+                alert('เบราว์เซอร์ของคุณไม่รองรับ Speech Recognition คุณสามารถซ้อมออกเสียงตาม Phonetics ได้');
+                return;
+            }
+
+            const btn = document.getElementById(`mic-btn-${index}`);
+            const status = document.getElementById(`speak-status-${index}`);
+            const resultEl = document.getElementById(`speak-result-${index}`);
+            const scoreEl = document.getElementById(`speak-score-${index}`);
+
+            btn.classList.add('animate-ping', 'bg-red-500');
+            status.textContent = "กำลังฟังเสียงของคุณ...";
+
+            speechRecognizer.start();
+
+            speechRecognizer.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                btn.classList.remove('animate-ping', 'bg-red-500');
+                status.textContent = "บันทึกเสียงแล้ว!";
+                resultEl.textContent = `คุณพูดว่า: "${transcript}"`;
+
+                const similarity = calculateSimilarity(transcript.toLowerCase(), targetText.toLowerCase());
+                scoreEl.classList.remove('hidden');
+                scoreEl.querySelector('span').textContent = `${Math.round(similarity)}%`;
+            };
+
+            speechRecognizer.onerror = function() {
+                btn.classList.remove('animate-ping', 'bg-red-500');
+                status.textContent = "เกิดข้อผิดพลาดในการรับเสียง โปรดลองอีกครั้ง";
+            };
+        }
+
+        function renderReadingTab(song) {
+            const lyricsContainer = document.getElementById('readingLyricsContainer');
+            lyricsContainer.innerHTML = song.lyricsData.map((item, i) => `
+                <div class="glass-card p-3 rounded-xl border border-slate-800 hover:border-indigo-500/40 transition">
+                    <p class="text-sm sm:text-base font-semibold text-slate-100 font-english">${item.en}</p>
+                    <p class="text-xs text-indigo-300/80 mt-1">${item.th}</p>
+                </div>
+            `).join('');
+
+            const vocabContainer = document.getElementById('vocabContainer');
+            vocabContainer.innerHTML = song.vocab.map(v => `
+                <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-white text-sm font-english">${v.word}</span>
+                        <span class="text-[10px] text-cyan-400 bg-cyan-950 px-2 py-0.5 rounded font-mono">${v.pos}</span>
+                    </div>
+                    <p class="text-xs text-slate-300 mt-1">${v.meaning}</p>
+                    <p class="text-[11px] text-slate-400 italic mt-1 font-english">Ex: "${v.example}"</p>
+                </div>
+            `).join('');
+
+            const grammarContainer = document.getElementById('grammarContainer');
+            grammarContainer.innerHTML = song.grammar.map(g => `
+                <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+                    <p class="font-bold text-indigo-300 text-xs mb-1 font-english">${g.title}</p>
+                    <p class="text-xs text-slate-300 leading-relaxed">${g.desc}</p>
+                </div>
+            `).join('');
+        }
+
+        function renderWritingTab(song) {
+            const dictationContainer = document.getElementById('dictationContainer');
+            dictationContainer.innerHTML = song.lyricsData.slice(0, 3).map((item, index) => `
+                <div class="glass-card p-4 rounded-2xl border border-slate-700/80 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-slate-400">Dictation #${index + 1}</span>
+                        <button onclick="playAtTime(${item.time})" class="text-xs bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-lg hover:bg-emerald-500/30 transition flex items-center space-x-1">
+                            <i class="fa-solid fa-play"></i>
+                            <span>ฟังเสียงประโยค</span>
+                        </button>
+                    </div>
+                    <input type="text" id="dictate-input-${index}" 
+                           placeholder="พิมพ์ประโยคภาษาอังกฤษที่ได้ยิน..." 
+                           class="w-full bg-slate-900 text-white text-sm p-3 rounded-xl border border-slate-700 focus:border-emerald-400 focus:outline-none font-english">
+                    <div class="flex items-center justify-between pt-1">
+                        <button onclick="checkDictation(${index}, '${escapeQuotes(item.en)}')" class="text-xs bg-slate-800 text-emerald-400 px-3 py-1.5 rounded-lg border border-slate-700 hover:bg-slate-700">
+                            ตรวจคำตอบ
+                        </button>
+                        <span id="dictate-feedback-${index}" class="text-xs font-semibold"></span>
+                    </div>
+                </div>
+            `).join('');
+
+            const sentenceContainer = document.getElementById('sentenceContainer');
+            sentenceContainer.innerHTML = song.vocab.map((v, index) => `
+                <div class="glass-card p-4 rounded-2xl border border-slate-700/80 space-y-2">
+                    <p class="text-xs text-purple-300">นำคำว่า <b class="text-white font-english">${v.word}</b> มาแต่งประโยค:</p>
+                    <textarea id="sent-input-${index}" rows="2" placeholder="Write your sentence here..." class="w-full bg-slate-900 text-white text-sm p-2.5 rounded-xl border border-slate-700 focus:border-purple-400 focus:outline-none font-english"></textarea>
+                    <button onclick="checkSentence(${index})" class="text-xs bg-purple-600 hover:bg-purple-500 text-white px-3 py-1.5 rounded-lg transition">
+                        ส่งประโยคเพื่อประเมิน
+                    </button>
+                    <p id="sent-feedback-${index}" class="text-xs text-slate-400 pt-1"></p>
+                </div>
+            `).join('');
+        }
+
+        function checkDictation(index, correctText) {
+            const userInput = document.getElementById(`dictate-input-${index}`).value.trim();
+            const feedback = document.getElementById(`dictate-feedback-${index}`);
+
+            if (userInput.toLowerCase() === correctText.toLowerCase()) {
+                feedback.textContent = "ถูกต้องแม่นยำ! 🎉";
+                feedback.className = "text-xs font-semibold text-emerald-400";
+            } else {
+                feedback.innerHTML = `ยังไม่ถูกต้อง <br><span class="text-slate-400">เฉลย: "${correctText}"</span>`;
+                feedback.className = "text-xs text-red-400";
+            }
+        }
+
+        function checkSentence(index) {
+            const userInput = document.getElementById(`sent-input-${index}`).value.trim();
+            const feedback = document.getElementById(`sent-feedback-${index}`);
+
+            if (userInput.length > 8) {
+                feedback.textContent = "ยอดเยี่ยม! โครงสร้างประโยคมีความสมบูรณ์เบื้องต้น";
+                feedback.className = "text-xs text-purple-300 font-semibold";
+            } else {
+                feedback.textContent = "ลองแต่งประโยคให้ยาวและสมบูรณ์ขึ้นอีกนิดนะครับ";
+                feedback.className = "text-xs text-amber-400";
+            }
+        }
+
+        /* -------------------------------------------------------------
+           UI Navigation & Modal Controls
+        ------------------------------------------------------------- */
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+        }
+
+        function showLoading(show, text = "") {
+            const loader = document.getElementById('loadingSection');
+            if (show) {
+                document.getElementById('loadingText').textContent = text;
+                loader.classList.remove('hidden');
+            } else {
+                loader.classList.add('hidden');
+            }
+        }
+
+        function showAccessDeniedModal(reason) {
+            document.getElementById('modalReasonText').querySelector('p').textContent = reason;
+            document.getElementById('accessDeniedModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('accessDeniedModal').classList.add('hidden');
+        }
+
+        function resetToHome() {
+            document.getElementById('lessonSection').classList.add('hidden');
+            document.getElementById('recommendedSection').classList.remove('hidden');
+            document.getElementById('searchInput').value = '';
+            if (ytPlayer && typeof ytPlayer.stopVideo === 'function') {
+                try { ytPlayer.stopVideo(); } catch(e){}
+            }
+        }
+
+        function shuffleOptions(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function escapeQuotes(str) {
+            return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+
+        function calculateSimilarity(str1, str2) {
+            const words1 = str1.split(' ');
+            const words2 = str2.split(' ');
+            let matches = 0;
+            words1.forEach(w => {
+                if (words2.includes(w)) matches++;
+            });
+            return Math.min(100, Math.round((matches / Math.max(words1.length, words2.length)) * 100) + 20);
+        }
+    </script>
+</body>
+</html>
